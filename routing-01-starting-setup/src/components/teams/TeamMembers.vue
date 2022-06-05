@@ -41,6 +41,9 @@ export default {
       this.teamName = selectedTeam.teamName;
     },
   },
+  beforeRouteUpdate(to, from, next) {
+    next();
+  },
   created() {
     this.loadMembers(this.teamId);
   },

@@ -11,13 +11,48 @@ const router = createRouter({
     history: createWebHistory(),
     routes: [
         { path: '/', redirect: '/teams' },
-        { path: '/teams', component: TeamsList, children: [
-            { path: ':teamId', component: TeamMembers, props: true },
+        { 
+            path: '/teams', 
+            component: TeamsList, 
+            meta: { needsAuth: true },
+            children: [
+            { name: "team-members", path: ':teamId', component: TeamMembers, props: true },
         ]},
-        { path: '/users', component: UsersList },        
+        { 
+            path: '/users', 
+            component: UsersList,
+            beforeEnter(to, from, next) {
+                next();
+            }
+        },        
         { path: '/:catchAll(.*)', component: NotFound },
-    ]
+    ],
+    scrollBehavior(to, from, savedPosition) {
+        if (savedPosition) {
+            return savedPosition;
+        }
+        return { left: 0, top: 0 };
+    }
 });
+
+router.beforeEach(function(to, from, next) {
+    console.log('Global beforeEach');
+    console.log(to);
+    console.log(from);
+    if (to.meta.needsAuth) {
+        console.log('to.meta.needsAuth');
+        next();
+    } else {
+        next();
+    }   
+});
+
+router.afterEach(function(to, from) {
+    console.log('Global beforeEach');
+    console.log(to);
+    console.log(from);
+});
+
 const app = createApp(App)
 
 app.use(router);

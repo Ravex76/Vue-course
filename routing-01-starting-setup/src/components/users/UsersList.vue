@@ -18,6 +18,12 @@ export default {
       this.$router.push('/teams');
     },
   },
+  beforeRouteEnter(to, from, next) {
+    next();
+  },
+  beforeRouteLeave(to, from, next) {
+    next();
+  }
 };
 </script>
 
