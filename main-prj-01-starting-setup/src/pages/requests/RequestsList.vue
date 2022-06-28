@@ -1,15 +1,15 @@
 <template>
   <div>
-    <!-- <base-dialog :show="!!error" title="An error occurred!" @close="handleError">
+    <base-dialog :show="!!error" title="An error occurred!" @close="handleError">
       <p>{{ error }}</p>
-    </base-dialog> -->
+    </base-dialog>
     <section>
       <base-card>
         <header>
           <h2>Requests Received</h2>
         </header>
-        <!-- <base-spinner v-if="isLoading"></base-spinner> -->
-        <ul v-if="hasRequests && !isLoading">
+        <base-spinner v-if="isLoading"></base-spinner>
+        <ul v-else-if="hasRequests && !isLoading">
           <request-item
             v-for="req in receivedRequests"
             :key="req.id"

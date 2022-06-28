@@ -21,7 +21,8 @@ export default {
                     'I am Julie and as a senior developer in a big tech company, I can help you get your first job or progress in your current role.',
                   hourlyRate: 30
                 }
-            ]
+            ],
+            lastFetch: null,
         }
     },
     getters: {
@@ -35,7 +36,15 @@ export default {
           const coaches = getters.coaches;
           const userId = rootGetters.userId;
           return coaches.some(coach => coach.id === userId);
-        }
+        },
+        shouldUpdate(state) {
+          const lastFetch = state.lastFetch;
+          if (!lastFetch) {
+            return true;
+          }
+          const currentTimeStamp = new Date().getTime();
+          return (currentTimeStamp - lastFetch) / 1000 > 60;
+        }        
     },
     mutations: {
         registerCoach(state, payload) {
@@ -43,7 +52,10 @@ export default {
         },
         setCoaches(state, payload) {
           state.coaches = payload;
-        },        
+        },
+        setFetchTimestamp(state) {
+          state.lastFetch = new Date().getTime();
+        }                
     },
     actions: {
       async registerCoach(context, data) {
@@ -71,20 +83,20 @@ export default {
           id: userId
         });
       },
-      async loadCoaches(context ) {
-        // if (!payload.forceRefresh && !context.getters.shouldUpdate) {
-        //   return;
-        // }
+      async loadCoaches(context, payload ) {
+        if (!payload.forceRefresh && !context.getters.shouldUpdate) {
+          return;
+        }
     
         const response = await fetch(
           `https://vuecourseproject-default-rtdb.firebaseio.com/coaches.json`
         );
         const responseData = await response.json();
     
-        // if (!response.ok) {
-        //   const error = new Error(responseData.message || 'Failed to fetch!');
-        //   throw error;
-        // }
+        if (!response.ok) {
+          const error = new Error(responseData.message || 'Failed to fetch!');
+          throw error;
+        }
     
         const coaches = [];
     
@@ -101,7 +113,7 @@ export default {
         }
     
         context.commit('setCoaches', coaches);
-        // context.commit('setFetchTimestamp');
+        context.commit('setFetchTimestamp');
       }      
     }
 }
